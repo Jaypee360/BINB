@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BINB | Brandon Is Not Boring</title>
+    <meta name="description" content="Discover events, activities, and communities in Brandon. Join BINB and never have a boring day in the city again.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar glass">
+        <div class="logo">
+            <span class="logo-mark"></span>
+            <h1>BINB</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#events">Events</a></li>
+            <li><a href="#categories">Categories</a></li>
+            <li><a href="#subscribe" class="btn-primary">Subscribe</a></li>
+        </ul>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Brandon Is <br><span class="gradient-text">Not Boring</span></h1>
+            <p class="hero-subtitle">The ultimate platform for new and current residents to discover events, parties, sports, and communities in the City of Brandon.</p>
+            <div class="hero-actions">
+                <a href="#events" class="btn-primary large">Explore Events</a>
+                <a href="#subscribe" class="btn-secondary large">Join Newsletter</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="glass-card mockup-card">
+                <div class="mockup-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                </div>
+                <h3>Upcoming Event</h3>
+                <p class="event-meta">Tomorrow • 8:00 PM</p>
+                <div class="event-tag green">Party</div>
+                <h2>Brandon Welcome Gala</h2>
+                <p>Join us for an unforgettable night of networking, music, and great food!</p>
+            </div>
+        </div>
+    </header>
+
+    <section id="categories" class="categories">
+        <div class="section-header">
+            <h2>Explore by Category</h2>
+            <p>Find exactly what you are looking for in Brandon.</p>
+        </div>
+        <div class="grid">
+            <div class="category-card">
+                <div class="icon-wrap blue">🎉</div>
+                <h3>Parties</h3>
+                <p>Nightlife, galas, and social gatherings.</p>
+            </div>
+            <div class="category-card">
+                <div class="icon-wrap green">⚽</div>
+                <h3>Sports</h3>
+                <p>Local matches, pickup games, and fitness.</p>
+            </div>
+            <div class="category-card">
+                <div class="icon-wrap blue">💼</div>
+                <h3>Business</h3>
+                <p>Networking, workshops, and career fairs.</p>
+            </div>
+            <div class="category-card">
+                <div class="icon-wrap green">🤝</div>
+                <h3>Community</h3>
+                <p>Festivals, volunteering, and town halls.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="subscribe" class="subscribe-section">
+        <div class="glass-panel">
+            <h2>Never Miss Out!</h2>
+            <p>Subscribe to our weekly newsletter and get the best of Brandon delivered right to your inbox.</p>
+            <form id="subscribe-form" class="subscribe-form">
+                <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+                <button type="submit" class="btn-primary">Subscribe</button>
+            </form>
+            <p id="form-message" class="form-message"></p>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 BINB - Brandon Is Not Boring. Built for the community, by the community.</p>
+    </footer>
+
+    <script>
+        document.getElementById('subscribe-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const messageEl = document.getElementById('form-message');
+            
+            try {
+                const response = await fetch('/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'email': email })
+                });
+                
+                const data = await response.json();
+                messageEl.textContent = data.message;
+                messageEl.className = data.success ? 'form-message success' : 'form-message error';
+                
+                if (data.success) {
+                    document.getElementById('email').value = '';
+                }
+            } catch (error) {
+                messageEl.textContent = 'An error occurred. Please try again.';
+                messageEl.className = 'form-message error';
+            }
+        });
+    </script>
+</body>
+</html>
