@@ -1,10 +1,24 @@
 from flask import Flask, render_template, request, jsonify
+import sqlite3
 
 app = Flask(__name__)
+
+def get_db_connection():
+    conn = sqlite3.connect('events.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/category/<string:category_name>')
+def category(category_name):
+    conn = get_db_connection()
+    # Fetch events for the category
+    events = conn.execute('SELECT * FROM events WHERE category = ?', (category_name.lower(),)).fetchall()
+    conn.close()
+    return render_template('category.html', category_name=category_name.capitalize(), events=events)
 
 @app.route('/subscribe', methods=['POST'])
 def subscribe():
