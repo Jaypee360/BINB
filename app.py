@@ -20,6 +20,14 @@ def category(category_name):
     conn.close()
     return render_template('category.html', category_name=category_name.capitalize(), events=events)
 
+@app.route('/delete_event/<int:event_id>', methods=['DELETE'])
+def delete_event(event_id):
+    conn = get_db_connection()
+    conn.execute('DELETE FROM events WHERE id = ?', (event_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True})
+
 @app.route('/subscribe', methods=['POST'])
 def subscribe():
     email = request.form.get('email')
