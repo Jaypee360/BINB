@@ -18,10 +18,10 @@ def init_db():
     cursor.execute('DELETE FROM events')
 
     # Seed data
-    # We will leave "Community" and "Sports" and "Business" empty to demonstrate Task 3 (empty states)
-    # We'll just add one event to "Parties" to show they work.
+    # We will leave "Community" and "Business" empty to demonstrate Task 3 (empty states)
+    # We'll just add one event to "Sports" to show they work.
     sample_events = [
-        ('Brandon Welcome Gala', 'Join us for an unforgettable night of networking, music, and great food!', 'parties', 'Tomorrow • 8:00 PM'),
+        ('Brandon Welcome Gala', 'Join us for an unforgettable night of networking, music, and great food!', 'sports', 'Tomorrow • 8:00 PM'),
         ('Tech Startup Mixer', 'A small mixer for software engineers and founders in Brandon.', 'business', 'Next Friday • 6:00 PM')
     ]
 

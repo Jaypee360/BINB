@@ -109,7 +109,11 @@
 
     <header class="category-hero">
         <h1 class="hero-title"><span class="gradient-text">{{ category_name }}</span> Events</h1>
+        {% if category_name == 'All' %}
+        <p class="hero-subtitle">Discover everything happening in Brandon.</p>
+        {% else %}
         <p class="hero-subtitle">Discover the best {{ category_name.lower() }} happening in Brandon.</p>
+        {% endif %}
     </header>
 
     <section class="events-container">

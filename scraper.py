@@ -83,9 +83,7 @@ def insert_event(title, description, category, date_time):
 def normalize_category(category_hint, title, description):
     """Categorizes an event by matching keywords in the text."""
     text = (title + " " + description + " " + category_hint).lower()
-    if any(word in text for word in ['party', 'gala', 'nightlife', 'dj', 'club', 'mixer']):
-        return 'parties'
-    elif any(word in text for word in ['sport', 'hockey', 'basketball', 'soccer', 'fitness', 'tournament', 'bobcats']):
+    if any(word in text for word in ['sport', 'hockey', 'basketball', 'soccer', 'fitness', 'tournament', 'bobcats']):
         return 'sports'
     elif any(word in text for word in ['business', 'networking', 'chamber', 'trade', 'career', 'corporate']):
         return 'business'
@@ -95,59 +93,15 @@ def normalize_category(category_hint, title, description):
 def setup_driver():
     """Initializes and returns a Headless Chrome WebDriver."""
     options = Options()
-    options.add_argument('--headless')
+    options.add_argument('--headless=new')
     options.add_argument('--disable-gpu')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--disable-blink-features=AutomationControlled')
     options.add_argument('--window-size=1920,1080')
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
 
-def scrape_brandon_university(driver):
-    print("Scraping Brandon University...")
-    url = "https://events.brandonu.ca"
-    try:
-        driver.get(url)
-        time.sleep(3) # Wait for js plugins to load
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        
-        event_headings = soup.find_all(['h2', 'h3'])
-        event_links = []
-        for h in event_headings:
-            title = h.text.strip().replace('\n', '').replace('\t', '')
-            if len(title) > 10 and 'Filter' not in title and 'Search' not in title and 'Event' not in title:
-                a_tag = h.find('a') if h.name != 'a' else h
-                if not a_tag and h.parent and h.parent.name == 'a':
-                    a_tag = h.parent
-                href = a_tag.get('href') if a_tag else None
-                
-                event_links.append({"title": title, "href": href})
-                if len(event_links) >= 3: break
-                
-        for event in event_links:
-            title = event['title']
-            description = f"Real event pulled from Brandon University calendar: {title}"
-            cat = normalize_category('university', title, description)
-            
-            if event['href']:
-                try:
-                    driver.get(event['href'])
-                    time.sleep(1)
-                    detail_soup = BeautifulSoup(driver.page_source, 'html.parser')
-                    date_val = extract_datetime(detail_soup.body)
-                except Exception:
-                    date_val = "Upcoming Date"
-            else:
-                date_val = "Upcoming Date"
-                
-            if date_val == "Check Website for Schedule":
-                date_val = "Upcoming Date"
-                
-            insert_event(title, description, cat, date_val)
-            print(f"Found BU Event (Deep): {title}")
-            
-    except Exception as e:
-        print(f"BU Scrape failed: {e}")
 
 def scrape_ebrandon(driver):
     print("Scraping E-Brandon...")
@@ -342,13 +296,57 @@ def scrape_keystone_centre(driver):
 
 def scrape_downtown_biz(driver):
     print("Scraping Downtown BIZ...")
-    pass
+    url = "https://brandondowntown.biz/events/"
+    try:
+        driver.get(url)
+        time.sleep(4)
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        
+        links = soup.find_all('a')
+        event_links = []
+        for a in links:
+            href = a.get('href', '')
+            if '/events/' in href and not href.endswith('/events/'):
+                title = a.text.strip().replace('\n', ' ')
+                if title and len(title) > 5 and 'Event' not in title:
+                    if href.startswith('/'):
+                        href = "https://brandondowntown.biz" + href
+                        
+                    # Prevent duplicates
+                    if not any(e['href'] == href for e in event_links):
+                        event_links.append({"title": title, "href": href})
+                    if len(event_links) >= 3: break
+
+        for event in event_links:
+            title = event['title']
+            description = f"Downtown core event: {title}"
+            cat = normalize_category('community', title, description)
+            
+            if event['href']:
+                try:
+                    driver.get(event['href'])
+                    time.sleep(2)
+                    detail_soup = BeautifulSoup(driver.page_source, 'html.parser')
+                    date_val = extract_datetime(detail_soup.body)
+                except Exception as e:
+                    print(f"Deep scrape failed for {title}: {e}")
+                    date_val = "Upcoming Event"
+            else:
+                date_val = "Upcoming Event"
+                
+            if date_val == "Check Website for Schedule":
+                date_val = "Upcoming Event"
+                
+            insert_event(title, description, cat, date_val)
+            print(f"Found Downtown BIZ Event (Deep): {title}")
+
+    except Exception as e:
+        print(f"Downtown BIZ Scrape failed: {e}")
 
 def run_all_scrapers():
     print("Starting Web Scraper Pipeline...")
     driver = setup_driver()
     try:
-        scrape_brandon_university(driver)
         scrape_ebrandon(driver)
         scrape_chamber_of_commerce(driver)
         scrape_brandon_tourism(driver)

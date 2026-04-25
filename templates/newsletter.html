@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribe | BINB</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .newsletter-hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+        .newsletter-container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            z-index: 2;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .back-link:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar glass">
+        <div class="logo">
+            <span class="logo-mark"></span>
+            <a href="/" style="text-decoration: none; color: inherit;"><h1>BINB</h1></a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/events">Events</a></li>
+            <li><a href="/#categories">Categories</a></li>
+        </ul>
+    </nav>
+
+    <header class="newsletter-hero">
+        <div class="blob blob-1" style="width: 400px; height: 400px; top: 10%; left: 10%;"></div>
+        <div class="blob blob-2" style="width: 500px; height: 500px; bottom: 10%; right: 10%;"></div>
+        
+        <div class="newsletter-container glass-panel">
+            <a href="/" class="back-link">← Back to Home</a>
+            <h2>Get the Pulse of Brandon</h2>
+            <p style="margin-bottom: 2rem; color: var(--text-muted);">Subscribe below to instantly receive a curated email of all the upcoming parties, networking events, and community gatherings happening near you!</p>
+            
+            <form id="subscribe-form" class="subscribe-form" style="max-width: 100%;">
+                <input type="email" id="email" name="email" placeholder="Enter your best email address" required style="width: 100%; margin-bottom: 1rem;">
+                <button type="submit" class="btn-primary" style="width: 100%;">Send Me Events Now</button>
+            </form>
+            <p id="form-message" class="form-message"></p>
+        </div>
+    </header>
+
+    <script>
+        document.getElementById('subscribe-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const messageEl = document.getElementById('form-message');
+            const submitBtn = this.querySelector('button[type="submit"]');
+            
+            // UI Loading state
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ 'email': email })
+                });
+                
+                const data = await response.json();
+                messageEl.textContent = data.message;
+                messageEl.className = data.success ? 'form-message success' : 'form-message error';
+                
+                if (data.success) {
+                    document.getElementById('email').value = '';
+                }
+            } catch (error) {
+                messageEl.textContent = 'An error occurred. Please try again.';
+                messageEl.className = 'form-message error';
+            } finally {
+                submitBtn.textContent = 'Send Me Events Now';
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

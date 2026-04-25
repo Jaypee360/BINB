@@ -17,9 +17,9 @@
             <h1>BINB</h1>
         </div>
         <ul class="nav-links">
-            <li><a href="#events">Events</a></li>
+            <li><a href="/events">Events</a></li>
             <li><a href="#categories">Categories</a></li>
-            <li><a href="#subscribe" class="btn-primary">Subscribe</a></li>
+            <li><a href="/newsletter" class="btn-primary">Subscribe</a></li>
         </ul>
     </nav>
 
@@ -28,8 +28,8 @@
             <h1 class="hero-title">Brandon Is <br><span class="gradient-text">Not Boring</span></h1>
             <p class="hero-subtitle">The ultimate platform for new and current residents to discover events, parties, sports, and communities in the City of Brandon.</p>
             <div class="hero-actions">
-                <a href="#events" class="btn-primary large">Explore Events</a>
-                <a href="#subscribe" class="btn-secondary large">Join Newsletter</a>
+                <a href="/events" class="btn-primary large">Explore Events</a>
+                <a href="/newsletter" class="btn-secondary large">Join Newsletter</a>
             </div>
         </div>
         <div class="hero-visual">
@@ -43,9 +43,9 @@
                 </div>
                 <h3>Upcoming Event</h3>
                 <p class="event-meta">Tomorrow • 8:00 PM</p>
-                <div class="event-tag green">Party</div>
-                <h2>Brandon Welcome Gala</h2>
-                <p>Join us for an unforgettable night of networking, music, and great food!</p>
+                <div class="event-tag green">Sports</div>
+                <h2>Brandon Basketball Finals</h2>
+                <p>Join us for an unforgettable night of competitive local sports!</p>
             </div>
         </div>
     </header>
@@ -56,11 +56,6 @@
             <p>Find exactly what you are looking for in Brandon.</p>
         </div>
         <div class="grid">
-            <a href="/category/parties" class="category-card" style="display: block;">
-                <div class="icon-wrap blue">🎉</div>
-                <h3>Parties</h3>
-                <p>Nightlife, galas, and social gatherings.</p>
-            </a>
             <a href="/category/sports" class="category-card" style="display: block;">
                 <div class="icon-wrap green">⚽</div>
                 <h3>Sports</h3>
@@ -79,47 +74,9 @@
         </div>
     </section>
 
-    <section id="subscribe" class="subscribe-section">
-        <div class="glass-panel">
-            <h2>Never Miss Out!</h2>
-            <p>Subscribe to our weekly newsletter and get the best of Brandon delivered right to your inbox.</p>
-            <form id="subscribe-form" class="subscribe-form">
-                <input type="email" id="email" name="email" placeholder="Enter your email address" required>
-                <button type="submit" class="btn-primary">Subscribe</button>
-            </form>
-            <p id="form-message" class="form-message"></p>
-        </div>
-    </section>
-
     <footer>
         <p>&copy; 2026 BINB - Brandon Is Not Boring. Built for the community, by the community.</p>
     </footer>
 
-    <script>
-        document.getElementById('subscribe-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const messageEl = document.getElementById('form-message');
-            
-            try {
-                const response = await fetch('/subscribe', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams({ 'email': email })
-                });
-                
-                const data = await response.json();
-                messageEl.textContent = data.message;
-                messageEl.className = data.success ? 'form-message success' : 'form-message error';
-                
-                if (data.success) {
-                    document.getElementById('email').value = '';
-                }
-            } catch (error) {
-                messageEl.textContent = 'An error occurred. Please try again.';
-                messageEl.className = 'form-message error';
-            }
-        });
-    </script>
 </body>
 </html>
