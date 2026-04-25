@@ -14,7 +14,7 @@ def get_db_connection():
     return conn
 
 def send_email_async(to_email, html_content):
-    sender_email = "goFuckyourself@gmail.com"
+    sender_email = "testeremail@gmail.com"
     sender_password = ""
     try:
         msg = MIMEMultipart('alternative')
